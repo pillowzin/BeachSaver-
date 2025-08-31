@@ -3,6 +3,9 @@ import random
 import math
 from const import *
 
+pygame.mixer.init()
+background_music = pygame.mixer.Sound("sounds/background-music.mp3")
+
 class GameState:
     def __init__(self, game):
         self.game = game
@@ -19,8 +22,9 @@ class GameState:
 class Menu(GameState):
     def __init__(self, game):
         super().__init__(game)
-        self.font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 16)
+        self.font = pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
         self.particles = [(random.randint(0, wdt), random.randint(0, hgt//2)) for _ in range(30)]
+        background_music.play(loops=-1)
 
     def update(self, dt):
         for i, (x, y) in enumerate(self.particles):
@@ -52,7 +56,7 @@ class Menu(GameState):
 class Concluido(GameState):
     def __init__(self, game):
         super().__init__(game)
-        self.font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 16)
+        self.font = pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
 
     def draw(self, surface):
         # fundo azul-arroxeado simples
@@ -66,8 +70,34 @@ class Concluido(GameState):
         text = self.font.render("Jogo Concluído!", True, (245, 245, 220))
         surface.blit(text, (wdt//2 - text.get_width()//2, hgt//2 - text.get_height()//2))
 
-        self.font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 12)
+        self.font = pygame.font.Font("fonts/PressStart2P-Regular.ttf", 12)
         text = self.font.render("Aperte R para jogar denovo", True, (245, 245, 220))
         surface.blit(text, (wdt//2 - text.get_width()//2, hgt//2 - text.get_height()//2+60))
 
         pygame.display.flip()
+
+
+class Morte(GameState):
+    def __init__(self, game):
+        super().__init__(game)
+        self.font = pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
+
+
+        def draw(self, surface):
+            #fundo vermelho
+            pulse = (math.sin(pygame.time.get_ticks()/500) + 1)/2
+            r = int(150 + 100 * pulse)
+            g = int(0)
+            b = int(0)
+
+            surface.fill((r, g, b))
+
+            # texto central
+            text = self.font.render("Você Morreu!", True, (245,245,220))
+            surface.blit(text, (wdt//2 - text.get_width()//2, hgt//2 - text.get_height()//2))
+
+            self.font = pygame.font.Font("fonts/PressStart2P-Regular.ttf", 12)
+            text = self.font.render("Aperte R para tentar de novo", True, (245,245,220))
+            surface.blit(text, (wdt//2 - text.get_width()//2, hgt//2 - text.get_height()//2+60))
+
+            pygame.display.flip()
